@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Historial | AnemiCheck{% endblock %}
+
+{% block content %}
+<section class="history-shell">
+    <div class="section-heading">
+        <p class="eyebrow">Historial</p>
+        <h1>Ultimos tamizajes</h1>
+        <p>Se guarda la probabilidad, el nivel de riesgo y el nombre del archivo. La imagen no se conserva.</p>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Archivo</th>
+                    <th>Probabilidad</th>
+                    <th>Riesgo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in results %}
+                    <tr>
+                        <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>{{ item.original_filename }}</td>
+                        <td>{{ item.probability_percent|floatformat:1 }}%</td>
+                        <td><span class="risk-pill risk-{{ item.risk_level }}">{{ item.get_risk_level_display }}</span></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Aun no hay tamizajes registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

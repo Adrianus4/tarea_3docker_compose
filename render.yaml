@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: anemicheck
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: python manage.py migrate && gunicorn anemicheck.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --timeout 120
+    healthCheckPath: /healthz/
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: anemicheck-db
+          property: connectionString
+      - key: ANEMIA_MODEL_PATH
+        value: anemicheck_mobilenetv2_mvp.keras
+      - key: MAX_UPLOAD_BYTES
+        value: "6291456"
+
+databases:
+  - name: anemicheck-db
+    databaseName: anemicheck
+    user: anemicheck

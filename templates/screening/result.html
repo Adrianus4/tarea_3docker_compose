@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Resultado | AnemiCheck{% endblock %}
+
+{% block content %}
+<section class="result-layout">
+    <div class="result-summary risk-border-{{ result.risk_level }}">
+        <p class="eyebrow">Resultado del tamizaje</p>
+        <h1>Riesgo {{ result.risk_label|lower }}</h1>
+        <div class="probability-meter" aria-label="Probabilidad estimada">
+            <div style="width: {{ result.probability_percent|floatformat:0 }}%"></div>
+        </div>
+        <p class="probability-value">{{ result.probability_percent|floatformat:1 }}%</p>
+        <p>{{ result.risk_summary }}</p>
+        <p class="medical-warning">Tamizaje orientativo, no diagnostico medico. La confirmacion requiere evaluacion clinica y pruebas de laboratorio indicadas por personal de salud.</p>
+        <div class="button-row">
+            <a class="primary-button" href="{% url 'upload' %}">Evaluar otra imagen</a>
+            <a class="secondary-button" href="{% url 'history' %}">Ver historial</a>
+        </div>
+    </div>
+
+    <div class="image-review">
+        <img src="{{ preview_uri }}" alt="Imagen ocular evaluada">
+        <dl>
+            <div>
+                <dt>Archivo</dt>
+                <dd>{{ record.original_filename }}</dd>
+            </div>
+            <div>
+                <dt>Fecha</dt>
+                <dd>{{ record.created_at|date:"d/m/Y H:i" }}</dd>
+            </div>
+        </dl>
+    </div>
+</section>
+{% endblock %}

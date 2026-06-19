@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluar imagen | AnemiCheck{% endblock %}
+
+{% block content %}
+<section class="app-layout">
+    <div class="workspace">
+        <div class="section-heading">
+            <p class="eyebrow">Deteccion orientativa de anemia</p>
+            <h1>Sube una imagen ocular clara</h1>
+            <p>El backend convertira la imagen a RGB, la redimensionara a 224x224 y ejecutara el modelo MobileNetV2 del MVP.</p>
+        </div>
+
+        <form class="upload-form" method="post" enctype="multipart/form-data" data-upload-form>
+            {% csrf_token %}
+            <label class="dropzone" for="{{ form.image.id_for_label }}" data-dropzone>
+                <input id="{{ form.image.id_for_label }}" name="{{ form.image.html_name }}" type="file" accept="image/png,image/jpeg,image/webp" required data-file-input>
+                <span class="dropzone-icon" aria-hidden="true">+</span>
+                <strong>Selecciona o arrastra la imagen</strong>
+                <span>JPG, PNG o WEBP hasta 6 MB</span>
+            </label>
+            {% if form.image.errors %}
+                <div class="form-error">{{ form.image.errors }}</div>
+            {% endif %}
+
+            <div class="preview-panel" data-preview-panel hidden>
+                <img alt="Vista previa de la imagen ocular" data-preview-image>
+                <div>
+                    <strong data-file-name></strong>
+                    <span data-file-size></span>
+                </div>
+            </div>
+
+            <button class="primary-button submit-button" type="submit" data-submit-button>
+                Analizar imagen
+            </button>
+        </form>
+    </div>
+
+    <aside class="side-panel" aria-label="Informacion del tamizaje">
+        <div class="info-block">
+            <span class="info-kicker">Umbrales</span>
+            <dl class="risk-list">
+                <div><dt>Bajo</dt><dd>&lt; 40%</dd></div>
+                <div><dt>Moderado</dt><dd>40% - 70%</dd></div>
+                <div><dt>Alto</dt><dd>&gt; 70%</dd></div>
+            </dl>
+        </div>
+
+        <div class="info-block">
+            <span class="info-kicker">Uso responsable</span>
+            <p>Este resultado es tamizaje orientativo. Ante sintomas, embarazo, infancia, enfermedad cronica o riesgo nutricional, se debe consultar a personal de salud.</p>
+        </div>
+
+        {% if recent_results %}
+            <div class="info-block">
+                <span class="info-kicker">Recientes</span>
+                <ul class="compact-history">
+                    {% for item in recent_results %}
+                        <li>
+                            <span class="risk-pill risk-{{ item.risk_level }}">{{ item.get_risk_level_display }}</span>
+                            <span>{{ item.probability_percent|floatformat:1 }}%</span>
+                            <time datetime="{{ item.created_at|date:'c' }}">{{ item.created_at|date:"d/m H:i" }}</time>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </aside>
+</section>
+{% endblock %}

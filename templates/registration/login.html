@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Ingresar | AnemiCheck{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-panel">
+        <div>
+            <p class="eyebrow">MVP de tamizaje</p>
+            <h1>Ingresa para evaluar una imagen ocular</h1>
+            <p class="muted">El resultado muestra una probabilidad estimada y un nivel de riesgo. No es diagnostico medico.</p>
+        </div>
+
+        <form class="stack-form" method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+
+            <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+
+            <button class="primary-button" type="submit">Ingresar</button>
+        </form>
+
+        <p class="auth-switch">No tienes cuenta? <a href="{% url 'register' %}">Crear cuenta</a></p>
+    </div>
+</section>
+{% endblock %}

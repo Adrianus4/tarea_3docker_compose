@@ -1,0 +1,43 @@
+services:
+  proxy:
+    image: osopolartech/anemia-proxy-s12:latest
+    container_name: anemia_proxy_s12
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+
+  web:
+    image: eduardobautistaa/anemia-web-s12:latest
+    container_name: anemia_web_s12
+    environment:
+      DJANGO_SECRET_KEY: "demo-secret-key-s12"
+      DEBUG: "True"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,web,proxy"
+      CSRF_TRUSTED_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080"
+      DATABASE_URL: "postgres://anemicheck:anemiapass@db:5432/anemicheck"
+      DB_SSL_REQUIRE: "False"
+      ANEMIA_MODEL_PATH: "/app/anemicheck_mobilenetv2_mvp.keras"
+      MAX_UPLOAD_BYTES: "6291456"
+      SECURE_SSL_REDIRECT: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: tiburonsoftware/anemia-db-s12:latest
+    container_name: anemia_db_s12
+    environment:
+      POSTGRES_DB: anemicheck
+      POSTGRES_USER: anemicheck
+      POSTGRES_PASSWORD: anemiapass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anemicheck -d anemicheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
